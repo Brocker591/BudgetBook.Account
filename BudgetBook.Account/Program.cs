@@ -57,7 +57,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 const string RabbitMQ = "RABBITMQ";
 const string ServiceBus = "SERVICEBUS";
 
-
 switch (serviceSettings.MessageBroker?.ToUpper())
 {
     case ServiceBus:
