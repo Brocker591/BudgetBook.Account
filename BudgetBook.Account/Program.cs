@@ -1,3 +1,4 @@
+using BudgetBook.Account.Consumers;
 using BudgetBook.Account.Entities;
 using BudgetBook.Account.Repositories;
 using BudgetBook.Account.Settings;
@@ -72,7 +73,6 @@ switch (serviceSettings.MessageBroker?.ToUpper())
                 configurator.Host(serviceBusSettings.ConnectionString);
                 configurator.ConfigureEndpoints(context, new KebabCaseEndpointNameFormatter(serviceSettings.ServiceName, false));
                 configurator.UseMessageRetry((retryConfigurator) => retryConfigurator.Interval(3, TimeSpan.FromSeconds(5)));
-
             });
 
         });
@@ -112,6 +112,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+
 }
 
 app.UseHttpsRedirection();
