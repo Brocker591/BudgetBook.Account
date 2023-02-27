@@ -8,34 +8,42 @@ namespace BudgetBook.Account.Consumers;
 public class UserBankAccountChangeConsumer : IConsumer<UserBankAccountChange>
 {
     private readonly IRepository<User> repository;
+    private readonly ILogger<UserBankAccountChangeConsumer> logger;
 
-    public UserBankAccountChangeConsumer(IRepository<User> repository)
+    public UserBankAccountChangeConsumer(IRepository<User> repository, ILogger<UserBankAccountChangeConsumer> logger)
     {
         this.repository = repository;
+        this.logger = logger;
     }
 
     public async Task Consume(ConsumeContext<UserBankAccountChange> context)
     {
-        var message = context.Message;
-
-        var item = await repository.GetAsync(message.UserId);
-
-        if(item is null)
+        try
         {
-            item = new User
+            var message = context.Message;
+            var item = await repository.GetAsync(message.UserId);
+
+            if (item is null)
             {
-                Id = message.UserId,
-                BankAccount = message.BankAccountChange
-            };
+                item = new User
+                {
+                    Id = message.UserId,
+                    BankAccount = message.BankAccountChange
+                };
 
-            await repository.CreateAsync(item);
+                await repository.CreateAsync(item);
+            }
+            else
+            {
+                item.BankAccount = item.BankAccount + message.BankAccountChange;
+                await repository.UpdateAsync(item);
+            }
         }
-        else
+        catch (System.Exception ex)
         {
-            item.BankAccount = item.BankAccount + message.BankAccountChange;
-
-            await repository.UpdateAsync(item);
+            logger.LogError(ex.Message);
         }
+
     }
 }
 
