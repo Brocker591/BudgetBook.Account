@@ -20,17 +20,14 @@ ServiceSettings serviceSettings = builder.Configuration.GetSection(nameof(Servic
 MongoDbSettings mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
 
 
-builder.Services.AddCors(o =>
-             {
-                 o.AddPolicy("AllowSetOrigins", options =>
-                 {
-
-                     options.AllowAnyOrigin();
-                     options.AllowAnyHeader();
-                     options.AllowAnyMethod();
-
-                 });
-             });
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        builder =>
+        {
+            builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        });
+});
 
 // Add services to the container.
 
@@ -112,9 +109,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-
 }
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 
